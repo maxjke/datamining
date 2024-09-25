@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KNN Classifier</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .container {
+            margin-top: 50px;
+            max-width: 500px;
+            font-family: Arial, sans-serif;
+        }
+
+        label, p {
+            font-size: 16px;
+        }
+
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        #plot {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KNN Classifier</h1>
+        <p>Enter coordinates (format: "1,2" or "0,2"):</p>
+        <form action="/classify" method="POST">
+            <label for="data">Coordinates:</label>
+            <input type="text" id="data" name="data" placeholder="Enter x1,x2" required>
+            <button type="submit">Classify</button>
+        </form>
+
+        <h2>Current Data Points and Classes:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>x₁</th>
+                    <th>x₂</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(data_points|length) %}
+                <tr>
+                    <td>{{ data_points[i][0] }}</td>
+                    <td>{{ data_points[i][1] }}</td>
+                    <td>{{ labels[i] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+       
+        <div id="plot"></div>
+    </div>
+
+    <script>
+        
+        const dataFromServer = {{ data_json | safe }};
+
+        
+        const positivePoints = [];
+        const negativePoints = [];
+
+        dataFromServer.points.forEach((point, index) => {
+            if (dataFromServer.labels[index] === '+') {
+                positivePoints.push(point);
+            } else {
+                negativePoints.push(point);
+            }
+        });
+
+        
+        const tracePositive = {
+            x: positivePoints.map(p => p[0]),
+            y: positivePoints.map(p => p[1]),
+            mode: 'markers',
+            marker: {color: 'blue'},
+            name: 'Positive (+)'
+        };
+
+        const traceNegative = {
+            x: negativePoints.map(p => p[0]),
+            y: negativePoints.map(p => p[1]),
+            mode: 'markers',
+            marker: {color: 'red'},
+            name: 'Negative (-)'
+        };
+
+        const data = [tracePositive, traceNegative];
+
+        const layout = {
+            title: 'KNN Data Points',
+            xaxis: {title: 'x₁'},
+            yaxis: {title: 'x₂'},
+            showlegend: true
+        };
+
+        Plotly.newPlot('plot', data, layout);
+    </script>
+</body>
+</html>

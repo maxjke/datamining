@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rezultatas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='content/bootstrap.min.css') }}">
+    <style>
+        .container {
+            margin-top: 50px;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rezultatas</h1>
+        <p>Prognuozajama klase: <strong>{{ result }}</strong></p>
+        <a href="/" class="btn btn-secondary">Atgal</a>
+    </div>
+</body>
+</html>
